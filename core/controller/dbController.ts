@@ -42,7 +42,7 @@ function saveDB() {
 }
 
 export function loadTodos(): Array<TodoItem> {
-  return db.todos;
+  return [...db.todos];
 }
 
 export function createTodo(content: string): TodoItem {
