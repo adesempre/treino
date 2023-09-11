@@ -1,5 +1,5 @@
 import { TodoItem } from "./TodoItem";
 export interface TodoDB {
-  lastTodoId: number;
+  lastTodoId: string;
   todos: TodoItem[];
 }

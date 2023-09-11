@@ -1,55 +1,15 @@
-//import fs = require("fs"); // CommonJS
-import * as fs from "fs"; // ES6
-import { TodoItem } from "./model/TodoItem";
-import { TodoDB } from "./model/TodoDB";
-
-const DB_FILE_PATH = "./core/db";
-let db: TodoDB;
+import db from "./controller/dbController";
 
 console.log("[CRUD]");
 
-function loadDB(): TodoDB {
-  console.log("Lendo a base de dados...");
-  const dbString = fs.readFileSync(DB_FILE_PATH, "utf-8");
-  try {
-    const db = JSON.parse(dbString || "{}");
-    if (!db.todos) {
-      // Fail Fast Validations
-      console.log("DB sem estrutura de TODO's");
-      return clearBD();
-    }
-    console.log(`Total de TODO's inicializados: ${db.todos.length}`);
-    // fix last TODO id (se os últimos foram removidos, posso)
-    db.lastTodoId = db.todos.length = 0
-      ? 0
-      : db.todos[db.todos.length - 1].id ?? 0;
-    return db;
-  } catch (error) {
-    console.log("DB com estrutura inválida");
-    return clearBD();
-  }
-}
+db.createTodo("tarefa generica");
+db.createTodo("outra tarefa");
 
-function clearBD(): TodoDB {
-  console.log("DB reiniciado");
-  fs.writeFileSync(DB_FILE_PATH, "");
-  return { lastTodoId: 0, todos: [] };
-}
+const todos = db.loadTodos();
+console.log("Inicial", JSON.stringify(todos, null, 4));
 
-function create(content: string): TodoItem {
-  const todo: TodoItem = {
-    id: ++db.lastTodoId,
-    date: new Date().toISOString(),
-    content: content,
-    done: false,
-  };
+db.updateContentByID(todos[0].id, "opa");
+db.closeTodo(todos[0].id);
+db.deleteTodo(todos[todos.length - 1].id)
 
-  db.todos.push(todo);
-  fs.writeFileSync(DB_FILE_PATH, JSON.stringify(db, null, 4));
-  return todo;
-}
-
-// SIMULATION
-db = loadDB();
-create(`tarefa ${db.lastTodoId + 1}`);
-create(`tarefa ${db.lastTodoId + 1}`);
+console.log("Final", JSON.stringify(db.loadTodos(), null, 4));
