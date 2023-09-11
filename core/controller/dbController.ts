@@ -72,11 +72,11 @@ export function updateContentByID(id: string, content: string) {
   updateTodo(id, { content });
 }
 
-export function closeTodo(id: string) {
+export function closeTodoByID(id: string) {
   updateTodo(id, { done: true });
 }
 
-export function deleteTodo(id: string) {
+export function deleteTodoByID(id: string) {
   const originalTodo = db.todos.find((todo) => todo.id === id);
   if (!originalTodo) {
     return;
@@ -91,6 +91,6 @@ export default {
   createTodo,
   loadTodos,
   updateContentByID,
-  closeTodo,
-  deleteTodo,
+  closeTodoByID,
+  deleteTodoByID,
 };
