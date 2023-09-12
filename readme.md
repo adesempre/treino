@@ -1,9 +1,14 @@
 # Curso `Crud com qualidade`
 
 ## 1 - sites
+
+#### 1.1 - curso ``Crud com qualidade``
 [proposta](https://crudcomqualidade.io/)  
 [acesso](https://crudcomqualidade.club.hotmart.com/)  
 
+#### 1.2 - tecnologias
+[react](https://react.dev/)
+[next](https://nextjs.org/)
 ## 2 - objetivo
 > treinar criar um projeto node do zero, aproveitando dicas e boas práticas de quem tem experiência no tema.
 
@@ -16,3 +21,4 @@
 > `npx tsc --init` gera o arquivo base tsconfig.json para configuração de regra de typescript do projeto;  
 > `tsc ./[file-name].ts` compila um arquivo typescript e gera o javascrip para publicação;  
 > `npx ts_node .[file-name].ts` executa um script TS.
+> `npm install next@latest react@latest react-dom@latest` instala a última versão do next, react e react-dom
