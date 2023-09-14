@@ -1,9 +1,33 @@
 import React from "react";
 import { GlobalStyles } from "@ui/theme/GlobalStyles";
+import { TodoItem } from "@model/TodoItem";
+import { todoController } from "@ui/controller/todosController";
 
 const bg: string = "/images/bg/filhotes.png";
 
 export default function Page() {
+    const [todos, setTodos] = React.useState<TodoItem[]>([]);
+    const [taskContent, setTaskContent] = React.useState("");
+    const [loaded, setLoaded] = React.useState(false);
+    const handleDelete = (id: string) => {
+        todoController.deleteTodoByID(id).then(() => {
+            setTodos(todos.filter((t) => t.id !== id));
+        });
+    };
+    const handleCreate = (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        todoController.createTodo(taskContent).then((newTodo) => {
+            setTodos([...todos, newTodo]);
+            setTaskContent("");
+        });
+    };
+    React.useEffect(() => {
+        if (loaded) return;
+        todoController.loadTodos().then((response) => {
+            setTodos(response);
+            setLoaded(true);
+        });
+    }, []);
     return (
         <main>
             <GlobalStyles themeName="indigo" />
@@ -16,8 +40,17 @@ export default function Page() {
                     <h1>O que fazer hoje?</h1>
                 </div>
                 <form>
-                    <input type="text" placeholder="Correr, Estudar..." />
-                    <button type="submit" aria-label="Adicionar novo item">
+                    <input
+                        type="text"
+                        placeholder="Correr, Estudar..."
+                        value={taskContent}
+                        onChange={(e) => setTaskContent(e.target.value)}
+                    />
+                    <button
+                        type="submit"
+                        aria-label="Adicionar novo item"
+                        onClick={(e) => handleCreate(e)}
+                    >
                         +
                     </button>
                 </form>
@@ -44,35 +77,42 @@ export default function Page() {
                     </thead>
 
                     <tbody>
-                        <tr>
-                            <td>
-                                <input type="checkbox" />
-                            </td>
-                            <td>d4f26</td>
-                            <td>
-                                Conteúdo de uma TODO Lorem ipsum dolor sit amet
-                                consectetur adipisicing elit. Eaque vero facilis
-                                obcaecati, autem aliquid eius! Consequatur eaque
-                                doloribus laudantium soluta optio odit,
-                                provident, ab voluptates doloremque voluptas
-                                recusandae aspernatur aperiam.
-                            </td>
-                            <td align="right">
-                                <button data-type="delete">Apagar</button>
-                            </td>
-                        </tr>
+                        {!loaded && (
+                            <tr>
+                                <td
+                                    colSpan={4}
+                                    align="center"
+                                    style={{ textAlign: "center" }}
+                                >
+                                    Carregando...
+                                </td>
+                            </tr>
+                        )}
+                        {loaded &&
+                            todos.length > 0 &&
+                            todos.map((t) => (
+                                <tr key={t.id}>
+                                    <td>
+                                        <input type="checkbox" />
+                                    </td>
+                                    <td>{t.id}</td>
+                                    <td>{t.content}</td>
+                                    <td align="right">
+                                        <button
+                                            data-type="delete"
+                                            onClick={() => handleDelete(t.id)}
+                                        >
+                                            Apagar
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
 
-                        <tr>
-                            <td
-                                colSpan={4}
-                                align="center"
-                                style={{ textAlign: "center" }}
-                            >
-                                Carregando...
-                            </td>
-                        </tr>
+                        {/**
+                        
 
-                        <tr>
+                        {loaded &&
+                            todos.length == 0 && <tr>
                             <td colSpan={4} align="center">
                                 Nenhum item encontrado
                             </td>
@@ -98,6 +138,7 @@ export default function Page() {
                                 </button>
                             </td>
                         </tr>
+                         */}
                     </tbody>
                 </table>
             </section>

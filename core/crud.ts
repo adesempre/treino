@@ -1,4 +1,4 @@
-import db from "./controller/dbController";
+import db from "./dal/todosDAL";
 
 console.log("[CRUD]");
 

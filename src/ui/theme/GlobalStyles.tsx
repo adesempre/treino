@@ -343,6 +343,12 @@ export function GlobalStyles({ themeName }: { themeName?: ThemeName }) {
                 tbody td {
                     padding: 10px;
                 }
+                tbody tr td:nth-child(2) {
+                    max-width: 30px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    text-wrap: nowrap;
+                }
                 button,
                 a {
                     transition: all 0.2s;

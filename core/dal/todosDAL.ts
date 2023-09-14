@@ -3,6 +3,7 @@ import * as fs from "fs"; // ES6
 import { v4 as uuid } from "uuid";
 import { TodoItem } from "../model/TodoItem";
 import { TodoDB } from "../model/TodoDB";
+import TodoActions from "@model/TodoActions";
 
 const DB_FILE_PATH = "./core/db";
 const db: TodoDB = loadDB();
@@ -41,11 +42,23 @@ function saveDB() {
     fs.writeFileSync(DB_FILE_PATH, JSON.stringify(db, null, 4));
 }
 
-export function loadTodos(): Array<TodoItem> {
+function updateTodo(id: string, toUpdate: Partial<TodoItem>) {
+    const originalTodo = loadById(id);
+    Object.assign(originalTodo, toUpdate);
+    saveDB();
+}
+
+function loadTodos(): TodoItem[] {
     return [...db.todos];
 }
 
-export function createTodo(content: string): TodoItem {
+function loadById(id: string): TodoItem {
+    const originalTodo = db.todos.find((todo) => todo.id === id);
+    if (!originalTodo) throw new Error(`A tarefa "${id}" não foi localizada`);
+    return originalTodo;
+}
+
+function createTodo(content: string): TodoItem {
     const todo: TodoItem = {
         id: uuid(),
         date: new Date().toISOString(),
@@ -58,38 +71,29 @@ export function createTodo(content: string): TodoItem {
     return todo;
 }
 
-function updateTodo(id: string, toUpdate: Partial<TodoItem>) {
-    const originalTodo = db.todos.find((todo) => todo.id === id);
-    if (!originalTodo) {
-        console.log(`Não foi possível localizar o id ${id} para atualização`);
-        return;
-    }
-    Object.assign(originalTodo, toUpdate);
-    saveDB();
-}
-
-export function updateContentByID(id: string, content: string) {
+function updateContentByID(id: string, content: string): void {
     updateTodo(id, { content });
 }
 
-export function closeTodoByID(id: string) {
+function closeTodoByID(id: string): void {
     updateTodo(id, { done: true });
 }
 
-export function deleteTodoByID(id: string) {
-    const originalTodo = db.todos.find((todo) => todo.id === id);
-    if (!originalTodo) {
-        return;
-    }
+function deleteTodoByID(id: string): void {
+    loadById(id);
+
     db.todos = db.todos.filter((todo) => todo.id !== id);
     setLastId(db);
     saveDB();
 }
 
-export default {
-    createTodo,
+const TodoDAL: TodoActions = {
     loadTodos,
+    loadById,
+    createTodo,
     updateContentByID,
     closeTodoByID,
     deleteTodoByID,
 };
+
+export default TodoDAL;
